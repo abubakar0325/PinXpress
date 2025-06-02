@@ -1,0 +1,13 @@
+<!-- pastquestions/templates/pastquestions/purchase_history.html -->
+ {% extends 'accounts/base.html' %}
+{% load static %}
+{% block content %}
+<h2>My Purchased Questions</h2>
+<ul>
+  {% for p in purchases %}
+    <li>{{ p.question.title }} (₦{{ p.question.price }}) - {{ p.purchased_at|date:"M d, Y" }}</li>
+  {% empty %}
+    <li>You haven’t bought anything yet.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

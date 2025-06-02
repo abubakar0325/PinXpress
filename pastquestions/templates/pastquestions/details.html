@@ -1,0 +1,18 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+  <h1>{{ question.title }}</h1>
+  <p>{{ question.description }}</p>
+  <p>Price: ₦{{ question.price }}</p>
+
+  {% if user.is_authenticated %}
+    <form action="{% url 'pastquestions:initiate_payment' question.id %}" method="post" >
+      {% csrf_token %}
+      <input type="hidden" name="question_id" value="{{ question.id }}">
+      <button type="submit">Buy Now</button>
+      
+    </form>
+  {% else %}
+    <p><a href="{% url 'login' %}">Login</a> to purchase</p>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Page Not Found - 404</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9f9f9;
+            text-align: center;
+            padding-top: 50px;
+        }
+        h1 {
+            font-size: 4em;
+            color: #ff5252;
+        }
+        p {
+            font-size: 1.2em;
+            color: #555;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 25px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>404</h1>
+    <p>Oops! The page you're looking for doesn't exist.</p>
+
+    {% if user.is_authenticated %}
+        <a href="{% url 'dashboard' %}">Go to Home</a>
+    {% else %}
+        <a href="{% url 'login' %}">Go to Login</a>
+    {% endif %}
+</body>
+</html>

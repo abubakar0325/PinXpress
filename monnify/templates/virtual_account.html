@@ -1,0 +1,31 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Virtual Account Details</h2>
+    <ul class="list-group mb-4">
+        <li class="list-group-item"><strong>Account Name:</strong> {{ account.account_name }}</li>
+        <li class="list-group-item"><strong>Account Number:</strong> {{ account.account_number }}</li>
+        <li class="list-group-item"><strong>Bank:</strong> {{ account.bank_name }}</li>
+        <li class="list-group-item"><strong>Status:</strong> {{ account.status }}</li>
+        <li class="list-group-item"><strong>Reference:</strong> {{ account.account_reference }}</li>
+    </ul>
+    <a href="{% url 'dashboard' %}" class="btn btn-primary">Back to Dashboard</a>
+</div>
+
+{% if request.session.account_created %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    Swal.fire({
+        title: "Success!",
+        text: "Your virtual account was created successfully.",
+        icon: "success",
+        timer: 3000,
+        showConfirmButton: false
+    }).then(() => {
+        window.location.href = "{% url 'dashboard' %}";
+    });
+</script>
+{% endif %}
+
+{% endblock %}

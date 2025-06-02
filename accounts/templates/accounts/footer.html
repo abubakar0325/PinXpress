@@ -1,0 +1,15 @@
+<footer class="bg-primary text-white text-center py-3 mt-5">
+  <div class="container">
+    <p class="mb-0">© {{ year }} PinXpress. All rights reserved.</p>
+    <small>Built with 💻 by Abubakar Zangina</small>
+  </div>
+</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const year = new Date().getFullYear();
+    document.querySelectorAll('footer p').forEach(p => {
+      p.innerHTML = p.innerHTML.replace('{{ year }}', year);
+    });
+  });
+</script>

@@ -1,0 +1,283 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+{% block content %}
+<header>
+    <h1>Buy Past Exam Questions</h1>
+    <p>Choose from NECO, WAEC, JAMB past questions and prepare to ace your exams!</p>
+</header>
+
+<div class="questions-container">
+  {% for question in questions %}
+  <div class="question-card {{ question.category.name|lower }}">
+    {% if question.image %}
+    <div class="image-wrapper">
+      <img src="{{ question.image.url }}" alt="{{ question.title }}">
+    </div>
+    {% endif %}
+    <div class="question-info">
+      <h2>{{ question.title }}</h2>
+      <p class="category">{{ question.category.name }}</p>
+      <p class="description">{{ question.description|truncatewords:25 }}</p>
+      <p class="price">Price: ₦{{ question.price }}</p>
+
+      <div id="btn-group-{{ question.id }}">
+        {% if user.is_authenticated %}
+        <button 
+          class="btn btn-success btn-buy" 
+          data-question-id="{{ question.id }}"
+          data-question-title="{{ question.title }}"
+          data-price="{{ question.price }}"
+        >
+          Buy Now (₦{{ question.price }})
+        </button>
+
+        <button 
+          class="btn btn-primary download-btn" 
+          id="download-btn-{{ question.id }}" 
+          style="display:none;"
+        >
+          Download
+        </button>
+
+        <button 
+          class="btn btn-danger close-btn" 
+          id="close-btn-{{ question.id }}" 
+          style="display:none;"
+        >
+          Close
+        </button>
+        {% else %}
+        <a href="{% url 'login' %}" class="btn btn-warning">
+          Login to Buy
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <p>No past questions available at the moment. Check back later!</p>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_css %}
+ <style>
+* {
+    box-sizing: border-box;
+}
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+header h1 {
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 2.8rem;
+}
+header p {
+    font-weight: 400;
+    font-size: 1.1rem;
+    color: #7f8c8d;
+}
+.questions-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+}
+.question-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.question-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 25px rgba(0,0,0,0.15);
+}
+.image-wrapper img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+}
+.question-info {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.question-info h2 {
+    margin: 0 0 10px 0;
+    font-size: 1.3rem;
+    color: #34495e;
+}
+.question-info .category {
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 15px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    width: fit-content;
+    color: white;
+}
+.question-info .price {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.btn-success {
+    background-color: #27ae60;
+    color: white;
+}
+.btn-success:hover {
+    background-color: #219150;
+}
+.btn-primary {
+    background-color: #2980b9;
+    color: white;
+}
+.btn-primary:hover {
+    background-color: #1c5987;
+}
+.btn-danger {
+    background-color: #c0392b;
+    color: white;
+}
+.btn-danger:hover {
+    background-color: #992d22;
+}
+.btn-warning {
+    background-color: #f39c12;
+    color: white;
+}
+.btn-warning:hover {
+    background-color: #d68910;
+}
+.question-card.neco .category {
+    background-color: #2980b9;
+}
+.question-card.waec .category {
+    background-color: #e67e22;
+}
+.question-card.jamb .category {
+    background-color: #c0392b;
+}
+@media (max-width: 600px) {
+    .questions-container {
+        grid-template-columns: 1fr;
+    }
+}
+    </style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.btn-buy').forEach(button => {
+    button.addEventListener('click', () => {
+      const questionId = button.dataset.questionId;
+      const questionTitle = button.dataset.questionTitle;
+      Swal.fire({
+        title: `Buy "${questionTitle}"?`,
+        text: `Price: ₦${button.dataset.price}`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, buy it!',
+      }).then(result => {
+        if (result.isConfirmed) {
+          button.disabled = true;
+          button.textContent = 'Processing...';
+          fetch(`/past-questions/buy/${questionId}/`, {
+            method: 'POST',
+            headers: {
+              'X-CSRFToken': getCookie('csrftoken'),
+              'Accept': 'application/json',
+            }
+          })
+          .then(response => {
+            if (!response.ok) throw new Error('Purchase failed');
+            return response.json();
+          })
+          .then(data => {
+            if (data.success) {
+              Swal.fire('Success!', data.message, 'success');
+              button.style.display = 'none';
+              const downloadBtn = document.getElementById(`download-btn-${questionId}`);
+              if (downloadBtn) {
+                downloadBtn.style.display = 'inline-block';
+                downloadBtn.addEventListener('click', () => {
+                  fetch(`/past-questions/download/${questionId}/`)
+                    .then(resp => {
+                      if (!resp.ok) throw new Error('File not found');
+                      return resp.blob();
+                    })
+                    .then(blob => {
+                      const url = window.URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = ''; // filename from server
+                      document.body.appendChild(a);
+                      a.click();
+                      a.remove();
+                      window.URL.revokeObjectURL(url);
+                    })
+                    .catch(() => Swal.fire('Error', 'Failed to download the file.', 'error'));
+                }, { once: true });
+              }
+            } else {
+              Swal.fire('Error', data.message, 'error');
+              button.disabled = false;
+              button.textContent = `Buy Now (₦${button.dataset.price})`;
+            }
+          })
+          .catch(() => {
+            Swal.fire('Error', 'Failed to complete the purchase.', 'error');
+            button.disabled = false;
+            button.textContent = `Buy Now (₦${button.dataset.price})`;
+          });
+        }
+      });
+    });
+  });
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (const cookie of cookies) {
+        const c = cookie.trim();
+        if (c.startsWith(name + '=')) {
+          cookieValue = decodeURIComponent(c.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+});
+</script>
+{% endblock %}

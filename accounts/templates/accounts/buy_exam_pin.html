@@ -1,0 +1,147 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+{% load form_tags %}
+
+{% block title %}Buy Exam Pin | PinXpress{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h3 class="mb-4">Buy Exam Pin</h3>
+
+  <form method="post" id="buyPinForm">
+    {% csrf_token %}
+
+    <div class="mb-3">
+      <label for="pin_name" class="form-label">Select Pin Type:</label>
+      <select name="pin_name" id="pin_name" class="form-select" required>
+        <option value="" selected disabled>-- Choose Pin Type --</option>
+        {% for name, price in pin_price_map.items %}
+          <option value="{{ name }}" data-price="{{ price }}" {% if name not in available_pin_names %}disabled{% endif %}>
+            {{ name }} - ₦{{ price }}
+            {% if name not in available_pin_names %} (Unavailable){% endif %}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="quantity" class="form-label">Quantity:</label>
+      <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1" required>
+    </div>
+
+    <!-- Total Price Box -->
+    <div class="mb-3" id="total-price-box" style="display: none;">
+      <strong>Total Price:</strong> ₦<span id="total-price">0</span>
+    </div>
+
+    <!-- Conditional Buttons -->
+    <button type="submit" class="btn btn-success mt-3" id="buyBtn" {% if purchase_success %}style="display:none;"{% endif %}>
+      Buy
+    </button>
+
+    <a href="{% url 'download_pin_pdf' %}" class="btn btn-primary mt-3" id="downloadBtn" style="display: {% if purchase_success %}inline-block{% else %}none{% endif %};">
+      Download PDF
+    </a>
+
+    <button type="button" class="btn btn-secondary mt-3" id="closeBtn" style="display: {% if purchase_success %}inline-block{% else %}none{% endif %};">
+      Close
+    </button>
+  </form>
+</div>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const pinSelect = document.getElementById('pin_name');
+  const quantityInput = document.getElementById('quantity');
+  const totalPriceBox = document.getElementById('total-price-box');
+  const totalPriceSpan = document.getElementById('total-price');
+  const buyBtn = document.getElementById('buyBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const closeBtn = document.getElementById('closeBtn');
+
+  function formatCurrency(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  function updateTotalPrice() {
+    const selectedOption = pinSelect.options[pinSelect.selectedIndex];
+    const price = selectedOption ? parseFloat(selectedOption.getAttribute('data-price')) : 0;
+    const quantity = parseInt(quantityInput.value) || 0;
+
+    if (price && quantity > 0) {
+      const total = price * quantity;
+      totalPriceSpan.textContent = formatCurrency(total);
+      totalPriceBox.style.display = 'block';
+    } else {
+      totalPriceBox.style.display = 'none';
+    }
+  }
+
+  function validateForm() {
+    buyBtn.disabled = !(pinSelect.value && parseInt(quantityInput.value) > 0);
+  }
+
+  pinSelect.addEventListener('change', () => {
+    updateTotalPrice();
+    validateForm();
+  });
+
+  quantityInput.addEventListener('input', () => {
+    updateTotalPrice();
+    validateForm();
+  });
+
+  closeBtn.addEventListener('click', () => {
+    Swal.fire({
+      title: 'Do you want to download before closing?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, download',
+      cancelButtonText: 'No, close',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Keep download and close buttons visible
+      } else {
+        // Reset form for new purchase
+        downloadBtn.style.display = 'none';
+        closeBtn.style.display = 'none';
+        buyBtn.style.display = 'inline-block';
+      }
+    });
+  });
+
+  updateTotalPrice();
+  validateForm();
+});
+</script>
+
+<script>
+  // SweetAlert during form submission
+  const form = document.getElementById('buyPinForm');
+  form.addEventListener('submit', function (e) {
+    Swal.fire({
+      icon: 'info',
+      title: 'Processing...',
+      text: 'Please wait while your pins are being purchased.',
+      showConfirmButton: false,
+      timer: 2000
+    });
+  });
+
+  // SweetAlert for Django messages
+  {% if messages %}
+    {% for message in messages %}
+      Swal.fire({
+        icon: '{% if message.tags == "success" %}success{% else %}error{% endif %}',
+        title: '{{ message.tags|capfirst }}',
+        text: '{{ message }}',
+        confirmButtonText: 'OK'
+      });
+    {% endfor %}
+  {% endif %}
+</script>
+{% endblock %}

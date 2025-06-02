@@ -1,0 +1,14 @@
+{% extends 'accounts/base.html' %}
+
+{% block content %}
+  <h2>Confirm Purchase</h2>
+  <p>Do you want to buy: <strong>{{ question.title }}</strong> for ₦{{ question.price }}?</p>
+
+ <form method="post" action="{% url 'pastquestions:buy_question' question.id %}">
+  {% csrf_token %}
+  <button type="submit">Buy Now</button>
+</form>
+
+
+ 
+{% endblock %}

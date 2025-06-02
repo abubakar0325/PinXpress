@@ -1,0 +1,81 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+{% load form_tags %}
+
+
+{% block content %}
+<h2>Transaction History</h2>
+
+<!-- Top-Up Transactions -->
+<h3>Top-Up Transactions</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Transaction ID</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for tx in topups %}
+            <tr>
+                <td>
+                    {{ tx.transaction_id|default:"-" }}
+                    {% if tx.transaction_id %}
+                    <button onclick="copyToClipboard('{{ tx.transaction_id }}')">📋</button>
+                    {% endif %}
+                </td>
+                <td>₦{{ tx.amount }}</td>
+                <td>{{ tx.timestamp }}</td>
+                <td>{{ tx.successful|yesno:"Successful,Failed" }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="4">No top-up transactions.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Purchase Transactions -->
+<h3>Purchase Transactions</h3>
+<table border="1">
+    <thead>
+        <tr>
+            <th>Transaction ID</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in purchases %}
+            <tr>
+                <td>
+                    {{ p.transaction_id|default:"-" }}
+                    {% if p.transaction_id %}
+                    <button onclick="copyToClipboard('{{ p.transaction_id }}')">📋</button>
+                    {% endif %}
+                </td>
+                <td>{{ p.product_type }}</td>
+                <td>₦{{ p.amount }}</td>
+                <td>{{ p.timestamp }}</td>
+                <td>{{ p.status }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="5">No purchase transactions.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
+
+<script>
+  function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      alert("Copied: " + text);
+    }).catch(err => {
+      alert("Failed to copy: " + err);
+    });
+  }
+</script>

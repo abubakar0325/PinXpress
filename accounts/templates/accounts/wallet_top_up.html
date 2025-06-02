@@ -1,0 +1,31 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="card shadow-sm p-4">
+    <h3 class="mb-4">Wallet Top-Up</h3>
+
+    {% if virtual_accounts %}
+      <p class="alert alert-info">You already have a virtual account linked to your wallet:</p>
+
+      {% for account in virtual_accounts %}
+        <div class="border rounded p-3 mb-3">
+          <strong>Bank:</strong> {{ account.bank_name }}<br>
+          <strong>Account Number:</strong> {{ account.account_number }}<br>
+          <strong>Account Name:</strong> {{ account.account_name }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    {% if not virtual_accounts %}
+      <div class="alert alert-warning mt-4">
+        <p><strong>No virtual account found.</strong></p>
+        <p>Please contact the admin at <strong>09024905464</strong> for manual funding, or click the button below to get your account details.</p>
+        <a href="{% url 'dashboard' %}" class="btn btn-primary mt-2">Get Account Details</a>
+      </div>
+    {% endif %}
+    
+  </div>
+</div>
+{% endblock %}

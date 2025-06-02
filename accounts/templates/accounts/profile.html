@@ -1,0 +1,21 @@
+{% extends 'accounts/base.html' %}
+
+{% block title %}Profile | PinStore{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="card p-4">
+    <h3>My Profile</h3>
+    <ul class="list-group">
+      <li class="list-group-item"><strong>Username:</strong> {{ user.username }}</li>
+      <li class="list-group-item"><strong>Email:</strong> {{ user.email }}</li>
+      <li class="list-group-item"><strong>Balance:</strong> ₦{{ user.balance|floatformat:2 }}</li>
+    </ul>
+
+    <div class="mt-3 d-flex gap-2">
+      <a href="{% url 'edit_profile' %}" class="btn btn-primary flex-grow-1">Edit Profile</a>
+      <a href="{% url 'change_password' %}" class="btn btn-warning flex-grow-1">Change Password</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

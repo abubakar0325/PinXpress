@@ -1,0 +1,129 @@
+/* Reset & base */
+* {
+    box-sizing: border-box;
+}
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header h1 {
+    font-weight: 700;
+    color: #2c3e50;
+    font-size: 2.8rem;
+}
+
+header p {
+    font-weight: 400;
+    font-size: 1.1rem;
+    color: #7f8c8d;
+}
+
+/* Container grid */
+.questions-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+/* Question card */
+.question-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.question-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 25px rgba(0,0,0,0.15);
+}
+
+/* Image wrapper */
+.image-wrapper img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+}
+
+/* Info */
+.question-info {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.question-info h2 {
+    margin: 0 0 10px 0;
+    font-size: 1.3rem;
+    color: #34495e;
+}
+
+.question-info .category {
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 15px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    width: fit-content;
+    color: white;
+}
+
+/* Price and button */
+.question-info .price {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+}
+
+.btn-buy {
+    background-color: #27ae60;
+    color: white;
+    text-align: center;
+    padding: 12px 0;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: 1px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-buy:hover {
+    background-color: #219150;
+}
+
+/* Category colors */
+.question-card.neco .category {
+    background-color: #2980b9;  /* blue */
+}
+
+.question-card.waec .category {
+    background-color: #e67e22;  /* orange */
+}
+
+.question-card.jamb .category {
+    background-color: #c0392b;  /* red */
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .questions-container {
+        grid-template-columns: 1fr;
+    }
+}
