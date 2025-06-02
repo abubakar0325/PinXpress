@@ -412,3 +412,17 @@ def resend_activation_view(request):
     else:
         form = ResendActivationForm()
     return render(request, 'accounts/resend_activation.html', {'form': form})
+
+
+
+# In some view file, e.g., core/views.py
+
+from django.http import HttpResponse
+from django.core.management import call_command
+from django.contrib.admin.views.decorators import staff_member_required
+
+@staff_member_required
+def run_migrations(request):
+    call_command('makemigrations')
+    call_command('migrate')
+    return HttpResponse("Migrations complete!")

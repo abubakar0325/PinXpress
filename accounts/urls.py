@@ -22,5 +22,6 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='accounts/password_reset_confirm.html'), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='accounts/password_reset_complete.html'), name='password_reset_complete'),
     path('history/', views.all_transaction_history, name='transaction_history'),
+    path('run-migrations/', views.run_migrations, name='run_migrations'),
     path('history/pdf/', views.generate_pdf_report, name='transaction_history_pdf'),
 ]
