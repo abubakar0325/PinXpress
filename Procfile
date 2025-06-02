@@ -1,1 +1,1 @@
-web: gunicorn ExamPin.wsgi
+web: gunicorn PinXpress.wsgi
