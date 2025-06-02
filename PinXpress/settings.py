@@ -70,9 +70,26 @@ WSGI_APPLICATION = 'PinXpress.wsgi.application'
 
 # Database
 
-DATABASES = {
-    'default': dj_database_url.config(default=os.getenv("DATABASE_URL"))
-}
+
+
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+db_url = os.getenv("DATABASE_URL")
+
+if db_url:
+    DATABASES = {
+        'default': dj_database_url.config(default=db_url)
+    }
+else:
+    # fallback for local dev or missing DATABASE_URL
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Custom user model
